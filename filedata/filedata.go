@@ -6,11 +6,14 @@ import (
 	"fmt"
 )
 
-func FileData(fileAddress string) (error) {
+func FileData(fileAddress string) ([]byte, error) {
 	res, err := ioutil.ReadFile(fileAddress)
 	if err != nil {
-		return fmt.Errorf("Problem with json file opening with initial data. \n%v", err)
+		return []byte{}, fmt.Errorf("Problem with json file opening with initial data. \n%v", err)
 	}
+	return res, nil
+}
 
-	return nil
+func ChooseTask([]byte, int) ([]byte, error) {
+	
 }

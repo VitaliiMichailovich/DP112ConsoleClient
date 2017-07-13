@@ -2,10 +2,14 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"flag"
 	"fmt"
-	"os"
 	"github.com/VitaliiMichailovich/DP112ConsoleClient/filedata"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"strconv"
 )
 
 func main() {
@@ -25,6 +29,34 @@ func main() {
 	} else {
 		fileaddr = *fileJSON
 	}
-	err = filedata.FileData(fileaddr)
-	fmt.Println(taskId,err)
+	res, err := filedata.FileData(fileaddr)
+	if err != nil {
+		fmt.Println("Something went wrong.\n", err.Error())
+		os.Exit(0)
+	}
+
+	url := "http://localhost:8080"
+	var resource string
+	if *taskId == 0 {
+		resource = url + "/tasks"
+	} else {
+
+		resource = url + "/task/" + strconv.Itoa(*taskId)
+	}
+	fmt.Println(resource, string(res))
+	req, err := http.NewRequest("POST", resource, bytes.NewBuffer(res))
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	fmt.Println("response Status:", resp.Status)
+	fmt.Println("response Headers:", resp.Header)
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println("response Body:", string(body))
+
 }
