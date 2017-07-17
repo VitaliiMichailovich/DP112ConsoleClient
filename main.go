@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"github.com/VitaliiMichailovich/DP112ConsoleClient/filedata"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -29,7 +28,12 @@ func main() {
 	} else {
 		fileaddr = *fileJSON
 	}
-	res, err := filedata.FileData(fileaddr)
+
+	res, err := ioutil.ReadFile(fileaddr)
+	if err != nil {
+		return []byte{}, fmt.Errorf("Problem with json file opening with initial data. \n%v", err)
+	}
+
 	if err != nil {
 		fmt.Println("Something went wrong.\n", err.Error())
 		os.Exit(0)
