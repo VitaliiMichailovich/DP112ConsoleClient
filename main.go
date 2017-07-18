@@ -1,15 +1,14 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
-	"encoding/json"
 )
 
 func main() {
@@ -19,12 +18,11 @@ func main() {
 	fileJSON := flag.String("file", "", "a string")
 	link := flag.String("link", "http://localhost", "a string")
 	port := flag.Int("port", 8080, "an int")
-	url := *link+":"+strconv.Itoa(*port)
+	url := *link + ":" + strconv.Itoa(*port)
 	flag.Parse()
 	if *fileJSON == "" {
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Println("Please, write an address to json file with initial data.")
-		fileaddr, err = reader.ReadString('\n')
+		fmt.Print("Please, write an address to json file with initial data: ")
+		fmt.Scanln(&fileaddr)
 		if err != nil {
 			fmt.Println("Something went wrong \n", err.Error())
 			os.Exit(0)
@@ -33,9 +31,9 @@ func main() {
 		fileaddr = *fileJSON
 	}
 	res, err := ioutil.ReadFile(fileaddr)
-	fmt.Println(fileaddr)
 	if err != nil {
 		fmt.Println("Problem with json file opening with initial data. \n", err.Error())
+		os.Exit(0)
 	}
 	var resource string
 	dataJson := res
@@ -48,12 +46,16 @@ func main() {
 		dataJson = params[strconv.Itoa(*taskId)]
 	}
 	req, err := http.NewRequest("POST", resource, bytes.NewBuffer(dataJson))
+	if err != nil {
+		fmt.Println("Some problem with your server: ", resource, "\n", err.Error())
+		os.Exit(0)
+	}
 	req.Header.Set("Content-Type", "application/json")
-
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		fmt.Println("Some problem with your server: ", resource, "\n", err.Error())
+		os.Exit(0)
 	}
 	defer resp.Body.Close()
 
@@ -73,11 +75,21 @@ func main() {
 		var returnTask WriteBack
 		err = json.Unmarshal(body, &returnTask)
 		if err != nil {
-			fmt.Println("Blin")
+			fmt.Println("I can't unmarshal json: ", err.Error())
 		}
-		fmt.Println("Task: ", returnTask.Task, "\nResult: ", returnTask.Resp, "\nReason: \n", returnTask.Reason)
+		if returnTask.Reason != "" {
+			fmt.Println("Task:", returnTask.Task, " failed\nReason: \n", returnTask.Reason)
+		} else {
+			fmt.Println("Task:", returnTask.Task, "\nResult:")
+			fmt.Println(returnTask.Resp)
+		}
 	}
 	for _, results := range returnData {
-		fmt.Println("\nTask: ", results.Task, "\nResult: ", results.Resp, "\nReason: ", results.Reason)
+		if results.Reason != "" {
+			fmt.Println("\nTask:", results.Task, "failed\nReason: ", results.Reason)
+		} else {
+			fmt.Println("\nTask:", results.Task, "\nResult:")
+			fmt.Println(results.Resp)
+		}
 	}
 }
