@@ -1,5 +1,12 @@
 # DP112ConsoleClient
 Console client to DP112 server
 
--task=2 -file=tasks.json
--task=2 -file=c:\tasks.json
+Parameters:
+
+	-file=c:\tasks.json 		// File with tasks
+	
+	-task=2 			// Number of task, wich you want to run
+	
+	-link=http://localhost 		// Link to your web server (if need it)
+	
+	-port=8080 			// Port to your web server (if need it)
