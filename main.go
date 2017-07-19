@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	var fileaddr string
+	var fileAddr string
 	var err error
 	taskId := flag.Int("task", 0, "an int")
 	fileJSON := flag.String("file", "", "a string")
@@ -22,15 +22,15 @@ func main() {
 	flag.Parse()
 	if *fileJSON == "" {
 		fmt.Print("Please, write an address to json file with initial data: ")
-		fmt.Scanln(&fileaddr)
+		fmt.Scanln(&fileAddr)
 		if err != nil {
 			fmt.Println("Something went wrong \n", err.Error())
 			os.Exit(0)
 		}
 	} else {
-		fileaddr = *fileJSON
+		fileAddr = *fileJSON
 	}
-	res, err := ioutil.ReadFile(fileaddr)
+	res, err := ioutil.ReadFile(fileAddr)
 	if err != nil {
 		fmt.Println("Problem with json file opening with initial data. \n", err.Error())
 		os.Exit(0)
