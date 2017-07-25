@@ -16,10 +16,10 @@ func main() {
 	var err error
 	taskId := flag.Int("task", 0, "an int")
 	fileJSON := flag.String("file", "", "a string")
-	link := flag.String("link", "http://localhost", "a string")
-	port := flag.Int("port", 8080, "an int")
-	url := *link + ":" + strconv.Itoa(*port)
+	linkF := flag.String("link", "http://localhost", "a string")
+	portF := flag.Int("port", 8080, "an int")
 	flag.Parse()
+	url := *linkF + ":" + strconv.Itoa(*portF)
 	if *fileJSON == "" {
 		fmt.Print("Please, write an address to json file with initial data: ")
 		fmt.Scanln(&fileAddr)
